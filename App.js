@@ -39,7 +39,7 @@ class Timer extends React.Component {
       start: Date.now() + this.state.time
     })
     this.timer = setInterval(() => this.setState({
-      time:  this.state.start -Date.now()
+      time: (this.state.start -Date.now())
 
     }), 1);
   }
@@ -65,9 +65,8 @@ class Timer extends React.Component {
       <Button onPress={this.resetTimer} title="reset"/>
     return(
       <View>
-        <Text>{this.state.time}
-        {'\n'}
-        {this.state.start}
+        <Text>{new Date(this.state.time).toISOString().substr(14,5)}
+       
         </Text>
         {start}
         {resume}
