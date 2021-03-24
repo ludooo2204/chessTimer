@@ -23,9 +23,9 @@ class Timer extends React.Component {
   constructor(props){
     super(props)
     this.state = {
-      time: 1000,
+      time: 10000000,
       isOn: false,
-      start: 1000
+      start: 10000000
     }
     this.startTimer = this.startTimer.bind(this)
     this.stopTimer = this.stopTimer.bind(this)
@@ -35,13 +35,13 @@ class Timer extends React.Component {
     this.setState({
       isOn: true,
       time: this.state.time,
-      // start: Date.now()
-      start: Date.now() + this.state.time/1000
+    
+      start: Date.now() + this.state.time
     })
     this.timer = setInterval(() => this.setState({
-      time: this.state.time+(this.state.start -Date.now())/1000
-      // time: Date.now() - this.state.start
-    }), 100);
+      time:  this.state.start -Date.now()
+
+    }), 1);
   }
   stopTimer() {
     this.setState({isOn: false})
