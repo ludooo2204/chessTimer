@@ -10,209 +10,265 @@ import {transform} from '@babel/core';
 import React, {useState, useEffect} from 'react';
 
 import {Text, Button, Pressable, View, TimePickerAndroid} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-
-
-class Timer extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      time: 30000,
+      isWhiteTurn:null,
+      timeBlack: 30000,
+      timeWhite: 30000,
       isOn: false,
-      start: 0,
+      startWhite: 0,
+      startBlack: 0,
+      started:false
     };
-    this.startTimer = this.startTimer.bind(this);
-    this.stopTimer = this.stopTimer.bind(this);
+    this.startWhiteTimer = this.startWhiteTimer.bind(this);
+    this.startBlackTimer = this.startBlackTimer.bind(this);
+    this.stopWhiteTimer = this.stopWhiteTimer.bind(this);
+    this.stopBlackTimer = this.stopBlackTimer.bind(this);
     this.resetTimer = this.resetTimer.bind(this);
     this.handleTimer = this.handleTimer.bind(this);
-
+    this.start = this.start.bind(this)
+    // this.blackTimer = this.blackTimer.bind(this);
+    // this.whiteTimer = this.whiteTimer.bind(this);
   }
-  startTimer() {
-    console.log("startTimer!!!");
+  startWhiteTimer() {
+    console.log('startTimer!!!');
     this.setState({
       isOn: true,
-      time: this.state.time,
-      start: Date.now() + this.state.time,
+      timeWhite: this.state.timeWhite,
+      startWhite: Date.now() + this.state.timeWhite,
     });
-    this.timer = setInterval(
+    this.whiteTimer = setInterval(
       () =>
         this.setState({
-          time: this.state.start - Date.now(),
+          timeWhite: this.state.startWhite - Date.now(),
         }),
       50,
     );
   }
-  stopTimer() {
+  startBlackTimer() {
+    // console.log('startTimer!!!');
+    this.setState({
+      isOn: true,
+      timeBlack: this.state.timeBlack,
+      startBlack: Date.now() + this.state.timeBlack,
+    });
+    this.blackTimer = setInterval(
+      () =>
+        this.setState({
+          timeBlack: this.state.startBlack - Date.now(),
+        }),
+      50,
+    );
+  }
+  start(){
+this.setState({isWhiteTurn:true,started:true})
+
+
+}
+stopWhiteTimer() {
     this.setState({isOn: false});
-    clearInterval(this.timer);
+    console.log('this.whiteTimer');
+    console.log(this.whiteTimer);
+    clearInterval(this.whiteTimer);
+  }
+  stopBlackTimer() {
+    this.setState({isOn: false});
+    console.log('this.blackTimer');
+    console.log(this.blackTimer);
+    clearInterval(this.blackTimer);
   }
   resetTimer() {
-    this.setState({time: 0, isOn: false});
+    this.setState({timeWhite: 0, isOn: false});
   }
 
-  handleTimer(){
-    console.log('this.state.isOn');
-    console.log(this.state.isOn);
-    this.state.isOn?this.stopTimer():this.startTimer()
+  handleTimer() {
+    console.log('handleTimer');
+    console.log('this.state');
+    console.log(this.state);
+    console.log("whiteturn");
+    console.log(this.state.isWhiteTurn);
+    //  this.startTimer();
+    if(this.state.isWhiteTurn)  {
+      this.startBlackTimer();
+      this.stopWhiteTimer()
+    }
+    else {
+      this.startWhiteTimer();
+      this.stopBlackTimer()
+    }
+    // this.state.isWhiteTurn ?  (this.startBlackTimer(),this.stopWhiteTimer):(this.startWhiteTimer(),this.stopBlackTimer)
+    this.setState({isWhiteTurn:!this.state.isWhiteTurn})
 
+    // console.log("whiteturn");
+    // console.log(this.state.isWhiteturn);
+    // this.state.isWhiteturn ? this.stopTimer() : this.startTimer();
   }
   render() {
-    this.props.remonterTime(this.state.time)
-    this.props.isOn(this.state.isOn)
-
-    let stop =
-      this.state.time == 0 || !this.state.isOn ? null : (
-        <Button onPress={this.stopTimer} title="stop" />
-      );
+//  console.log(this.state);
+    // let stop =
+    //   this.state.timeWhite == 0 || !this.state.isOn ? null : (
+    //     <Button onPress={this.stopTimer} title="stop" />
+    //   );
 
     return (
-      <Pressable
-        style={this.props.color=="white"&&this.props.started?([
-          {
-            backgroundColor: 'white',
-            flex: 4,
-            justifyContent: 'center',
-            alignItems: 'center',
-          },
-           {transform: [{rotate: '180deg'}]},
-        ]):this.props.color=="white"&&!this.props.started?
-          ([
-          {
-            backgroundColor: 'white',
-            flex: 4,
-            justifyContent: 'center',
-            alignItems: 'center',
-            opacity:0.1
-          },
-           {transform: [{rotate: '180deg'}]},
-        ]):this.props.color=="black"&&this.props.started?([
-          {
-            backgroundColor: 'black',
-            flex: 4,
-            justifyContent: 'center',
-            alignItems: 'center',
-          },
-          //  {transform: [{rotate: '180deg'}]},
-        ]):   ([
-          {
-            backgroundColor: 'black',
-            flex: 4,
-            justifyContent: 'center',
-            alignItems: 'center',
-            opacity:0.8
-          },
-          //  {transform: [{rotate: '180deg'}]},
-        ])
-
-        }
-        onPress={this.props.started?this.handleTimer:null}
-        // onPress={this.startTimer}
-      >
-        <Text style={this.props.color=="white"?{color: 'black', fontSize: 50}:{color: 'white', fontSize: 50}}>
-          {this.state.time / 1000 < 3600
-            ? new Date(this.state.time).toISOString().substr(14, 5)
-            : "plus d'une heure!"}
-          {/* {start} */}
-          {/* {resume} */}
-          {/* {stop} */}
-          {/* {reset} */}
-        </Text>
-      </Pressable>
-    )}
+      <View
+        style={{
+          flex: 1,
+        }}>
+        {/* white */}
+        <Pressable
+          style={[
+            {
+              backgroundColor: 'white',
+              flex: 4,
+              justifyContent: 'center',
+              alignItems: 'center',
+            },
+            {transform: [{rotate: '180deg'}]},
+          ]}
+          onPress={this.handleTimer}>
+          <Text style={{color: 'black', fontSize: 50}}>
+            {this.state.timeWhite / 1000 < 3600
+              ? new Date(this.state.timeWhite).toISOString().substr(14, 5)
+              : "plus d'une heure!"}
+          </Text>
+        </Pressable>
+        <View style={{flexDirection: 'row'}}>
+        <View
+            style={{
+              backgroundColor: 'grey',
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <Icon name="cog" size={50} color="#000" />
+          </View>
+          {/* black */}
+          <Pressable
+            style={{
+              backgroundColor: 'grey',
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={this.start}
+          >
+            <Text style={{color: 'black', fontSize: 50}}>
+              {this.state.started ? (this.state.isWhiteTurn ? 'WHITE' : 'BLACK') : 'START'}
+              {/* {this.state.isWhiteturn?"white":"black"} */}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={{
+              backgroundColor: 'grey',
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            // onPress={start}
+          >
+            <Text style={{color: 'black', fontSize: 50}}>restart</Text>
+          </Pressable>
+        </View>
+        <Pressable
+          style={[
+            {
+              backgroundColor: 'black',
+              flex: 4,
+              justifyContent: 'center',
+              alignItems: 'center',
+            },
+          ]}
+          onPress={this.handleTimer}>
+          <Text style={{color: 'white', fontSize: 50}}>
+            {this.state.timeBlack / 1000 < 3600
+              ? new Date(this.state.timeBlack).toISOString().substr(14, 5)
+              : "plus d'une heure!"}
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
 }
 
-const App = () => {
-  const [whiteTimer, setWhiteTimer] = useState('10:00');
-  const [BlackTimer, setBlackTimer] = useState('10:00');
-  const [isWhiteTurn, toggleWhiteTurn] = useState(false);
-  const [initialTime, setInitialTime] = useState(null);
-  const [started, setStarted] = useState(false);
+// const App = () => {
+//   const [whiteTimer, setWhiteTimer] = useState('10:00');
+//   const [BlackTimer, setBlackTimer] = useState('10:00');
+//   const [isWhiteTurn, toggleWhiteTurn] = useState(false);
+//   const [initialTime, setInitialTime] = useState(null);
+//   const [started, setStarted] = useState(false);
 
+//   const handleWhiteTime = time => {
+//     // console.log('temps remonté = ', time);
+//   };
+//   const handleTurn = isWhiteTurn => {
+//     console.log('isWhiteTurn from App = ', isWhiteTurn);
+//   };
+//   const start = () => {
+//     console.log('start');
 
-  const handleWhiteTime= (time)=>{
-    console.log("temps remonté = " ,time);
-  }
-  const handleTurn= (isWhiteTurn)=>{
-    console.log("isWhiteTurn from App = " ,isWhiteTurn);
-    
-    // toggleWhiteTurn(!isWhiteTurn)
-  }
-  const start = () => {
-    console.log('start');
-    // let dateDepart = new Date();
-    // console.log(dateDepart);
-    // setInitialTime(dateDepart);
-    setStarted(true)
-    toggleWhiteTurn(true);
-  };
-  
- 
-  return (
-    <View
-      style={{
-        flex: 1,
-      }}>
-   
-        <Timer remonterTime={(e)=>handleWhiteTime(e)} isOn={(e)=>handleTurn(e)} color={"white"} started={started}/>
-   
-      <View style={{flexDirection:"row"}}>
-      <Pressable
-        style={{
-          backgroundColor: 'grey',
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        onPress={start}>
-        <Text style={{color: 'black', fontSize: 50}}>
-          {started ? (isWhiteTurn ? 'WHITE' : 'BLACK') : 'START'}
-          {/* {(isWhiteTurn ? 'WHITE' : 'BLACK') } */}
-        </Text>
-      </Pressable>
-      <Pressable
-        style={{
-          backgroundColor: 'grey',
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        onPress={start}>
-        <Text style={{color: 'black', fontSize: 50}}>
-          {started ? (isWhiteTurn ? 'WHITE' : 'BLACK') : 'START'}
-          {/* {(isWhiteTurn ? 'WHITE' : 'BLACK') } */}
-        </Text>
-      </Pressable>
-      <Pressable
-        style={{
-          backgroundColor: 'grey',
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        onPress={start}>
-        <Text style={{color: 'black', fontSize: 50}}>
-          {started ? (isWhiteTurn ? 'WHITE' : 'BLACK') : 'START'}
-          {/* {(isWhiteTurn ? 'WHITE' : 'BLACK') } */}
-        </Text>
-      </Pressable>
-      </View>
-     
-      <Timer remonterTime={(e)=>handleWhiteTime(e)} isOn={(e)=>handleTurn(e)} color={"black"} started={started}/>
-      {/* <Pressable
-        style={{
-          backgroundColor: 'black',
-          color: 'white',
-          flex: 4,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        onPress={() => (!isWhiteTurn ? toggleWhiteTurn(!isWhiteTurn) : null)}>
-        <Text style={{color: 'white', fontSize: 50}}>{BlackTimer}</Text>
-      </Pressable> */}
-      
-      {/* <Timer remonterTime={(e)=>handleWhiteTime(e)} /> */}
-    </View>
-  );
-};
+//     setStarted(true);
+//     toggleWhiteTurn(true);
+//   };
+
+//   return (
+//     <View
+//       style={{
+//         flex: 1,
+//       }}>
+//       <Timer
+//         remonterTime={e => handleWhiteTime(e)}
+//         isOn={e => handleTurn(e)}
+//         color={'white'}
+//         started={started}
+//       />
+
+//       <View style={{flexDirection: 'row'}}>
+//         <View
+//           style={{
+//             backgroundColor: 'grey',
+//             flex: 1,
+//             justifyContent: 'center',
+//             alignItems: 'center',
+//           }}>
+//           <Icon name="cog" size={50} color="#000" />
+//         </View>
+//         <Pressable
+//           style={{
+//             backgroundColor: 'grey',
+//             flex: 1,
+//             justifyContent: 'center',
+//             alignItems: 'center',
+//           }}
+//           onPress={start}>
+//           <Text style={{color: 'black', fontSize: 50}}>
+//             {started ? (isWhiteTurn ? 'WHITE' : 'BLACK') : 'START'}
+//           </Text>
+//         </Pressable>
+//         <Pressable
+//           style={{
+//             backgroundColor: 'grey',
+//             flex: 1,
+//             justifyContent: 'center',
+//             alignItems: 'center',
+//           }}
+//           onPress={start}>
+//           <Text style={{color: 'black', fontSize: 50}}>restart</Text>
+//         </Pressable>
+//       </View>
+
+//       <Timer
+//         remonterTime={e => handleWhiteTime(e)}
+//         isOn={e => handleTurn(e)}
+//         color={'black'}
+//         started={started}
+//       />
+//     </View>
+//   );
+// };
 
 export default App;
