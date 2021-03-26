@@ -54,8 +54,28 @@ class App extends React.Component {
     this.resume = this.resume.bind(this);
   }
 
-  componentDidMount() {
+  componentDidUpdate() {
     console.log("mount");
+      //fin partie
+      if (this.state.started&&(this.state.timeBlack<100||this.state.timeWhite<100)) {
+        this.stopBlackTimer();
+        this.stopWhiteTimer();
+        this.setState({started:false})
+        let fin = new Sound('fin.mp3', Sound.MAIN_BUNDLE, (error) => {
+          if (error) {
+            console.log('failed to load the sound', error);
+            return;
+          }
+          // Play the sound with an onEnd callback
+          fin.play((success) => {
+            if (success) {
+              console.log('successfully finished playing');
+            } else {
+              console.log('playback failed due to audio decoding errors');
+            }
+          });
+        });
+      }
 
   }
   strings = new LocalizedStrings({
@@ -127,20 +147,7 @@ class App extends React.Component {
   }
 
   pauseTimer() {
-    let fin = new Sound('fin.mp3', Sound.MAIN_BUNDLE, (error) => {
-      if (error) {
-        console.log('failed to load the sound', error);
-        return;
-      }
-      // Play the sound with an onEnd callback
-      fin.play((success) => {
-        if (success) {
-          console.log('successfully finished playing');
-        } else {
-          console.log('playback failed due to audio decoding errors');
-        }
-      });
-    });
+
     console.log(this.state.started && this.state.isOn ? 'pause' : 'reprise');
     if (this.state.isOn) {
       this.setState({ isOn: false });
@@ -201,6 +208,7 @@ class App extends React.Component {
     this.setState({ isWhiteTurn: !this.state.isWhiteTurn });
   }
   render() {
+  
     return (
       <View
         style={{
@@ -312,6 +320,7 @@ class App extends React.Component {
             {this.state.timeBlack / 1000 < 3600
               ? new Date(this.state.timeBlack).toISOString().substr(14, 5)
               : "plus d'une heure!"}
+              {/* {console.log(this.state.timeBlack)} */}
             {/* {"\n"} {this.strings.how} */}
           </Text>
         </Pressable>
