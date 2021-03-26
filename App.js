@@ -29,7 +29,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
 import * as Animatable from 'react-native-animatable';
 import LocalizedStrings from 'react-native-localization';
-
+import Sound from 'react-native-sound';
+Sound.setCategory('Playback');
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -51,6 +52,11 @@ class App extends React.Component {
     this.start = this.start.bind(this);
     this.pauseTimer = this.pauseTimer.bind(this);
     this.resume = this.resume.bind(this);
+  }
+
+  componentDidMount() {
+    console.log("mount");
+
   }
   strings = new LocalizedStrings({
     "en-US": {
@@ -106,6 +112,7 @@ class App extends React.Component {
   }
   start() {
     console.log('start');
+
     this.setState({ isWhiteTurn: true, started: true, isOn: true });
     this.handleTimer();
   }
@@ -120,6 +127,20 @@ class App extends React.Component {
   }
 
   pauseTimer() {
+    let fin = new Sound('fin.mp3', Sound.MAIN_BUNDLE, (error) => {
+      if (error) {
+        console.log('failed to load the sound', error);
+        return;
+      }
+      // Play the sound with an onEnd callback
+      fin.play((success) => {
+        if (success) {
+          console.log('successfully finished playing');
+        } else {
+          console.log('playback failed due to audio decoding errors');
+        }
+      });
+    });
     console.log(this.state.started && this.state.isOn ? 'pause' : 'reprise');
     if (this.state.isOn) {
       this.setState({ isOn: false });
@@ -148,6 +169,23 @@ class App extends React.Component {
     // this.setState({isWhiteTurn: !this.state.isWhiteTurn});
   }
   handleTimer() {
+    let click = new Sound('click.mp3', Sound.MAIN_BUNDLE, (error) => {
+      if (error) {
+        console.log('failed to load the sound', error);
+        return;
+      }
+
+
+
+      // Play the sound with an onEnd callback
+      click.play((success) => {
+        if (success) {
+          console.log('successfully finished playing');
+        } else {
+          console.log('playback failed due to audio decoding errors');
+        }
+      });
+    });
     console.log('handleTimer');
     console.log('this.state');
     console.log(this.state);
@@ -188,9 +226,9 @@ class App extends React.Component {
           </Text>
         </Pressable>
         <View style={
-          this.state.started?(this.state.isWhiteTurn?({ flexDirection: 'row', flex: 1,backgroundColor: 'white', }):({ flexDirection: 'row', flex: 1,backgroundColor: 'black', })):({ flexDirection: 'row', flex: 1,backgroundColor: 'grey', })
+          this.state.started ? (this.state.isWhiteTurn ? ({ flexDirection: 'row', flex: 1, backgroundColor: 'white', }) : ({ flexDirection: 'row', flex: 1, backgroundColor: 'black', })) : ({ flexDirection: 'row', flex: 1, backgroundColor: 'grey', })
           // this.state.isWhiteTurn?({ flexDirection: 'row', flex: 1,backgroundColor: 'white', }):({ flexDirection: 'row', flex: 1,backgroundColor: 'black', })
-          }>
+        }>
           <View
             style={{
               // backgroundColor: 'black',
@@ -198,7 +236,7 @@ class App extends React.Component {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            {this.state.isWhiteTurn?<Icon name="cog" size={50} color="#000" />:<Icon name="cog" size={50} color="#fff" />}
+            {this.state.isWhiteTurn ? <Icon name="cog" size={50} color="#000" /> : <Icon name="cog" size={50} color="#fff" />}
           </View>
 
           {!this.state.started ? (
@@ -210,7 +248,7 @@ class App extends React.Component {
                 alignItems: 'center',
               }}
               onPress={this.start}>
-              {this.state.isWhiteTurn?<Icon name="caret-right" size={70} color="#000" />:<Icon name="caret-right" size={70} color="#fff" />}
+              {this.state.isWhiteTurn ? <Icon name="caret-right" size={70} color="#000" /> : <Icon name="caret-right" size={70} color="#fff" />}
             </Pressable>
           ) : this.state.isOn ? (
             <Pressable
@@ -221,7 +259,7 @@ class App extends React.Component {
                 alignItems: 'center',
               }}
               onPress={this.pauseTimer}>
-              {this.state.isWhiteTurn?<Icon2 name="pause-presentation" size={70} color="#000" on />:<Icon2 name="pause-presentation" size={70} color="#fff" on />}
+              {this.state.isWhiteTurn ? <Icon2 name="pause-presentation" size={70} color="#000" on /> : <Icon2 name="pause-presentation" size={70} color="#fff" on />}
             </Pressable>
           ) : (
             <Pressable
@@ -239,12 +277,12 @@ class App extends React.Component {
                 direction="alternate"
                 // transition="backgroundColor"
                 duration={2000}
-                >
-                {this.state.isWhiteTurn?<Icon2 name="pause-presentation" size={80} color="#000" on />:<Icon2 name="pause-presentation" size={80} color="#fff" on />}
+              >
+                {this.state.isWhiteTurn ? <Icon2 name="pause-presentation" size={80} color="#000" on /> : <Icon2 name="pause-presentation" size={80} color="#fff" on />}
               </Animatable.Text>
             </Pressable>
           )}
-            <Pressable
+          <Pressable
             style={{
               // backgroundColor: 'black',
               flex: 1,
@@ -253,7 +291,7 @@ class App extends React.Component {
             }}>
             {/* <Text style={{color: 'black', fontSize: 40}}>restart</Text> */}
 
-            {this.state.isWhiteTurn?<Icon name="refresh" size={50} color="#000" />:<Icon name="refresh" size={50} color="#fff" />}
+            {this.state.isWhiteTurn ? <Icon name="refresh" size={50} color="#000" /> : <Icon name="refresh" size={50} color="#fff" />}
           </Pressable>
         </View>
 
@@ -289,11 +327,11 @@ export default App;
 const styles = StyleSheet.create({
   whiteStyle: {
     color: 'black',
-    backgroundColor:"white"
+    backgroundColor: "white"
   },
   blackStyle: {
     color: 'white',
-    backgroundColor:"black"
+    backgroundColor: "black"
   },
   red: {
     color: 'red',
