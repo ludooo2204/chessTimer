@@ -30,6 +30,9 @@ import Icon2 from 'react-native-vector-icons/MaterialIcons';
 import * as Animatable from 'react-native-animatable';
 import LocalizedStrings from 'react-native-localization';
 import Sound from 'react-native-sound';
+import Dialog from "react-native-dialog";
+import { TOUCHABLE_STATE } from 'react-native-gesture-handler/lib/typescript/components/touchables/GenericTouchable';
+
 Sound.setCategory('Playback');
 class App extends React.Component {
   constructor(props) {
@@ -42,6 +45,7 @@ class App extends React.Component {
       startWhite: 0,
       startBlack: 0,
       started: false,
+      isConfigVisible:false,
     };
     this.startWhiteTimer = this.startWhiteTimer.bind(this);
     this.startBlackTimer = this.startBlackTimer.bind(this);
@@ -52,10 +56,13 @@ class App extends React.Component {
     this.start = this.start.bind(this);
     this.pauseTimer = this.pauseTimer.bind(this);
     this.resume = this.resume.bind(this);
+    this.config = this.config.bind(this);
+    this.setBlackTime = this.setBlackTime.bind(this);
+    this.setWhiteTime = this.setWhiteTime.bind(this);
   }
 
   componentDidUpdate() {
-    console.log("mount");
+
       //fin partie
       if (this.state.started&&(this.state.timeBlack<100||this.state.timeWhite<100)) {
         this.stopBlackTimer();
@@ -76,6 +83,11 @@ class App extends React.Component {
           });
         });
       }
+
+  }
+  config(){
+  
+this.setState({isConfigVisible:true})
 
   }
   strings = new LocalizedStrings({
@@ -175,6 +187,14 @@ class App extends React.Component {
 
     // this.setState({isWhiteTurn: !this.state.isWhiteTurn});
   }
+  setBlackTime(value){
+    value =Number(value)*60000
+    this.setState({timeBlack:value})
+  }
+  setWhiteTime(value){
+     value =Number(value)*60000
+    this.setState({timeWhite:value})
+  }
   handleTimer() {
     let click = new Sound('click.mp3', Sound.MAIN_BUNDLE, (error) => {
       if (error) {
@@ -214,6 +234,17 @@ class App extends React.Component {
         style={{
           flex: 1,
         }}>
+          <Dialog.Container visible={this.state.isConfigVisible}>
+      <Dialog.Title>Account delete</Dialog.Title>
+      <Dialog.Description>
+        Do you want to delete this account? You cannot undo this action.
+      </Dialog.Description>
+      <Dialog.Input label="Combien de temps (min) pour les blancs ?" onChangeText={(value) => this.setWhiteTime(value)}  keyboardType="number-pad"></Dialog.Input>
+      <Dialog.Input label="Combien de temps (min) pour les noirs ?" onChangeText={(value) => this.setBlackTime(value)} keyboardType="number-pad"></Dialog.Input>
+
+      <Dialog.Button label="Cancel" onPress={this.start} />
+      <Dialog.Button label="Valider?" onPress={()=>this.setState({isConfigVisible:false})} />
+    </Dialog.Container>
         {/* white */}
         <Pressable
           style={[
@@ -237,7 +268,8 @@ class App extends React.Component {
           this.state.started ? (this.state.isWhiteTurn ? ({ flexDirection: 'row', flex: 1, backgroundColor: 'white', }) : ({ flexDirection: 'row', flex: 1, backgroundColor: 'black', })) : ({ flexDirection: 'row', flex: 1, backgroundColor: 'grey', })
           // this.state.isWhiteTurn?({ flexDirection: 'row', flex: 1,backgroundColor: 'white', }):({ flexDirection: 'row', flex: 1,backgroundColor: 'black', })
         }>
-          <View
+          <Pressable
+            onPress={this.config}
             style={{
               // backgroundColor: 'black',
               flex: 1,
@@ -245,7 +277,7 @@ class App extends React.Component {
               alignItems: 'center',
             }}>
             {this.state.isWhiteTurn ? <Icon name="cog" size={50} color="#000" /> : <Icon name="cog" size={50} color="#fff" />}
-          </View>
+          </Pressable>
 
           {!this.state.started ? (
             <Pressable
