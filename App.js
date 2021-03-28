@@ -208,6 +208,7 @@ this.setState({isConfigVisible:true})
       click.play((success) => {
         if (success) {
           console.log('successfully finished playing');
+          click.release()
         } else {
           console.log('playback failed due to audio decoding errors');
         }
