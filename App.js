@@ -23,7 +23,8 @@ import {
   View,
   TimePickerAndroid,
   ToolbarAndroid,
-  StyleSheet
+  StyleSheet,
+  TouchableOpacity
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
@@ -46,6 +47,7 @@ class App extends React.Component {
       startBlack: 0,
       started: false,
       isConfigVisible:false,
+      fontSize:10,
     };
     this.startWhiteTimer = this.startWhiteTimer.bind(this);
     this.startBlackTimer = this.startBlackTimer.bind(this);
@@ -208,6 +210,7 @@ this.setState({isConfigVisible:true})
       click.play((success) => {
         if (success) {
           console.log('successfully finished playing');
+          click.release()
         } else {
           console.log('playback failed due to audio decoding errors');
         }
@@ -330,8 +333,10 @@ this.setState({isConfigVisible:true})
               alignItems: 'center',
             }}>
             {/* <Text style={{color: 'black', fontSize: 40}}>restart</Text> */}
-
-            {this.state.isWhiteTurn ? <Icon name="refresh" size={50} color="#000" /> : <Icon name="refresh" size={50} color="#fff" />}
+            <TouchableOpacity onPress={() => this.setState({fontSize: (this.state.fontSize || 10) + 5 })}>
+  <Animatable.Text transition="fontSize" style={{color:'white',fontSize: this.state.fontSize || 10}}>Size me up, Scotty</Animatable.Text>
+</TouchableOpacity>
+             <Icon name="refresh" size={50} color={this.state.isWhiteTurn ?"#000":"#fff"} />
           </Pressable>
         </View>
 
@@ -352,6 +357,7 @@ this.setState({isConfigVisible:true})
             {this.state.timeBlack / 1000 < 3600
               ? new Date(this.state.timeBlack).toISOString().substr(14, 5)
               : "plus d'une heure!"}
+              
               {/* {console.log(this.state.timeBlack)} */}
             {/* {"\n"} {this.strings.how} */}
           </Text>
