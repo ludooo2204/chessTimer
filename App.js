@@ -13,8 +13,8 @@ gestion des parametres de config
 
 */
 
-import { transform } from '@babel/core';
-import React, { useState, useEffect } from 'react';
+import {transform} from '@babel/core';
+import React, {useState, useEffect} from 'react';
 
 import {
   Text,
@@ -24,15 +24,17 @@ import {
   TimePickerAndroid,
   ToolbarAndroid,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
+
+import Configuration from './components/configuration';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Icon2 from 'react-native-vector-icons/MaterialIcons';
 import * as Animatable from 'react-native-animatable';
 import LocalizedStrings from 'react-native-localization';
 import Sound from 'react-native-sound';
-import Dialog from "react-native-dialog";
-import { TOUCHABLE_STATE } from 'react-native-gesture-handler/lib/typescript/components/touchables/GenericTouchable';
+
+import {TOUCHABLE_STATE} from 'react-native-gesture-handler/lib/typescript/components/touchables/GenericTouchable';
 
 Sound.setCategory('Playback');
 class App extends React.Component {
@@ -46,8 +48,8 @@ class App extends React.Component {
       startWhite: 0,
       startBlack: 0,
       started: false,
-      isConfigVisible:false,
-      fontSize:10,
+      isConfigVisible: false,
+      fontSize: 10,
     };
     this.startWhiteTimer = this.startWhiteTimer.bind(this);
     this.startBlackTimer = this.startBlackTimer.bind(this);
@@ -64,55 +66,53 @@ class App extends React.Component {
   }
 
   componentDidUpdate() {
-
-      //fin partie
-      if (this.state.started&&(this.state.timeBlack<100||this.state.timeWhite<100)) {
-        this.stopBlackTimer();
-        this.stopWhiteTimer();
-        this.setState({started:false})
-        let fin = new Sound('fin.mp3', Sound.MAIN_BUNDLE, (error) => {
-          if (error) {
-            console.log('failed to load the sound', error);
-            return;
+    //fin partie
+    if (
+      this.state.started &&
+      (this.state.timeBlack < 100 || this.state.timeWhite < 100)
+    ) {
+      this.stopBlackTimer();
+      this.stopWhiteTimer();
+      this.setState({started: false});
+      let fin = new Sound('fin.mp3', Sound.MAIN_BUNDLE, error => {
+        if (error) {
+          console.log('failed to load the sound', error);
+          return;
+        }
+        // Play the sound with an onEnd callback
+        fin.play(success => {
+          if (success) {
+            console.log('successfully finished playing');
+          } else {
+            console.log('playback failed due to audio decoding errors');
           }
-          // Play the sound with an onEnd callback
-          fin.play((success) => {
-            if (success) {
-              console.log('successfully finished playing');
-            } else {
-              console.log('playback failed due to audio decoding errors');
-            }
-          });
         });
-      }
-
+      });
+    }
   }
-  config(){
-  
-this.setState({isConfigVisible:true})
-
+  config() {
+    this.setState({isConfigVisible: true});
   }
   strings = new LocalizedStrings({
-    "en-US": {
-      how: "How do you want your egg today?",
-      boiledEgg: "Boiled egg",
-      softBoiledEgg: "Soft-boiled egg",
-      choice: "How to choose the egg"
+    'en-US': {
+      how: 'How do you want your egg today?',
+      boiledEgg: 'Boiled egg',
+      softBoiledEgg: 'Soft-boiled egg',
+      choice: 'How to choose the egg',
     },
     en: {
-      how: "How do you want your egg today?",
-      boiledEgg: "Boiled egg",
-      softBoiledEgg: "Soft-boiled egg",
-      choice: "How to choose the egg"
+      how: 'How do you want your egg today?',
+      boiledEgg: 'Boiled egg',
+      softBoiledEgg: 'Soft-boiled egg',
+      choice: 'How to choose the egg',
     },
     fr: {
-      how: "ca va mon?",
-      boiledEgg: "Uovo sodo",
-      softBoiledEgg: "Uovo alla coque",
-      choice: "Come scegliere l'uovo"
-    }
+      how: 'ca va mon?',
+      boiledEgg: 'Uovo sodo',
+      softBoiledEgg: 'Uovo alla coque',
+      choice: "Come scegliere l'uovo",
+    },
   });
-
 
   startWhiteTimer() {
     console.log('startTimer!!!');
@@ -147,7 +147,7 @@ this.setState({isConfigVisible:true})
   start() {
     console.log('start');
 
-    this.setState({ isWhiteTurn: true, started: true, isOn: true });
+    this.setState({isWhiteTurn: true, started: true, isOn: true});
     this.handleTimer();
   }
   stopWhiteTimer() {
@@ -157,19 +157,18 @@ this.setState({isConfigVisible:true})
     clearInterval(this.blackTimer);
   }
   resetTimer() {
-    this.setState({ timeWhite: 0, isOn: false });
+    this.setState({timeWhite: 0, isOn: false});
   }
 
   pauseTimer() {
-
     console.log(this.state.started && this.state.isOn ? 'pause' : 'reprise');
     if (this.state.isOn) {
-      this.setState({ isOn: false });
+      this.setState({isOn: false});
       this.stopBlackTimer();
       this.stopWhiteTimer();
     } else {
       // console.log("reprise")
-      this.setState({ isOn: true });
+      this.setState({isOn: true});
       this.resume();
     }
   }
@@ -181,36 +180,32 @@ this.setState({isConfigVisible:true})
     console.log('resume');
     if (this.state.isWhiteTurn) {
       this.startWhiteTimer();
-      // this.stopWhiteTimer();
+  
     } else {
       this.startBlackTimer();
-      // this.stopBlackTimer();
-    }
 
-    // this.setState({isWhiteTurn: !this.state.isWhiteTurn});
+    }
   }
-  setBlackTime(value){
-    value =Number(value)*60000
-    this.setState({timeBlack:value})
+  setBlackTime(value) {
+    value = Number(value) * 60000;
+    this.setState({timeBlack: value});
   }
-  setWhiteTime(value){
-     value =Number(value)*60000
-    this.setState({timeWhite:value})
+  setWhiteTime(value) {
+    value = Number(value) * 60000;
+    this.setState({timeWhite: value});
   }
   handleTimer() {
-    let click = new Sound('click.mp3', Sound.MAIN_BUNDLE, (error) => {
+    let click = new Sound('click.mp3', Sound.MAIN_BUNDLE, error => {
       if (error) {
         console.log('failed to load the sound', error);
         return;
       }
 
-
-
       // Play the sound with an onEnd callback
-      click.play((success) => {
+      click.play(success => {
         if (success) {
           console.log('successfully finished playing');
-          click.release()
+          click.release();
         } else {
           console.log('playback failed due to audio decoding errors');
         }
@@ -228,26 +223,26 @@ this.setState({isConfigVisible:true})
       this.stopBlackTimer();
     }
 
-    this.setState({ isWhiteTurn: !this.state.isWhiteTurn });
+    this.setState({isWhiteTurn: !this.state.isWhiteTurn});
+  }
+
+  handleParams(params){
+    if (params.cancel) {this.setState({isConfigVisible:false})}
+    else {
+    console.log(`les params sont ${JSON.stringify(params)}`)
+    this.setBlackTime(params.blackTime) 
+    this.setWhiteTime(params.whiteTime) 
+    this.setState({isConfigVisible:false})
+  }
   }
   render() {
-  
     return (
       <View
         style={{
           flex: 1,
         }}>
-          <Dialog.Container visible={this.state.isConfigVisible}>
-      <Dialog.Title>Account delete</Dialog.Title>
-      <Dialog.Description>
-        Do you want to delete this account? You cannot undo this action.
-      </Dialog.Description>
-      <Dialog.Input label="Combien de temps (min) pour les blancs ?" onChangeText={(value) => this.setWhiteTime(value)}  keyboardType="number-pad"></Dialog.Input>
-      <Dialog.Input label="Combien de temps (min) pour les noirs ?" onChangeText={(value) => this.setBlackTime(value)} keyboardType="number-pad"></Dialog.Input>
+          <Configuration visible={this.state.isConfigVisible} params={e=>this.handleParams(e)} ></Configuration>
 
-      <Dialog.Button label="Cancel" onPress={this.start} />
-      <Dialog.Button label="Valider?" onPress={()=>this.setState({isConfigVisible:false})} />
-    </Dialog.Container>
         {/* white */}
         <Pressable
           style={[
@@ -257,57 +252,70 @@ this.setState({isConfigVisible:true})
               justifyContent: 'center',
               alignItems: 'center',
             },
-            { transform: [{ rotate: '180deg' }] },
+            {transform: [{rotate: '180deg'}]},
           ]}
           onPress={this.handleTimer}>
-          <Text style={{ color: 'black', fontSize: 50 }}>
-
+          <Text style={{color: 'black', fontSize: 50}}>
             {this.state.timeWhite / 1000 < 3600
               ? new Date(this.state.timeWhite).toISOString().substr(14, 5)
               : "plus d'une heure!"}
           </Text>
         </Pressable>
-        <View style={
-          this.state.started ? (this.state.isWhiteTurn ? ({ flexDirection: 'row', flex: 1, backgroundColor: 'white', }) : ({ flexDirection: 'row', flex: 1, backgroundColor: 'black', })) : ({ flexDirection: 'row', flex: 1, backgroundColor: 'grey', })
-          // this.state.isWhiteTurn?({ flexDirection: 'row', flex: 1,backgroundColor: 'white', }):({ flexDirection: 'row', flex: 1,backgroundColor: 'black', })
-        }>
+        <View
+          style={
+            this.state.started
+              ? this.state.isWhiteTurn
+                ? {flexDirection: 'row', flex: 1, backgroundColor: 'white'}
+                : {flexDirection: 'row', flex: 1, backgroundColor: 'black'}
+              : {flexDirection: 'row', flex: 1, backgroundColor: 'grey'}
+    
+          }>
           <Pressable
             onPress={this.config}
             style={{
-              // backgroundColor: 'black',
+ 
               flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            {this.state.isWhiteTurn ? <Icon name="cog" size={50} color="#000" /> : <Icon name="cog" size={50} color="#fff" />}
+            {this.state.isWhiteTurn ? (
+              <Icon name="cog" size={50} color="#000" />
+            ) : (
+              <Icon name="cog" size={50} color="#fff" />
+            )}
           </Pressable>
 
           {!this.state.started ? (
             <Pressable
               style={{
-                // backgroundColor: 'black',
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
               onPress={this.start}>
-              {this.state.isWhiteTurn ? <Icon name="caret-right" size={70} color="#000" /> : <Icon name="caret-right" size={70} color="#fff" />}
+              {this.state.isWhiteTurn ? (
+                <Icon name="caret-right" size={70} color="#000" />
+              ) : (
+                <Icon name="caret-right" size={70} color="#fff" />
+              )}
             </Pressable>
           ) : this.state.isOn ? (
             <Pressable
               style={{
-                // backgroundColor: 'black',
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}
               onPress={this.pauseTimer}>
-              {this.state.isWhiteTurn ? <Icon2 name="pause-presentation" size={70} color="#000" on /> : <Icon2 name="pause-presentation" size={70} color="#fff" on />}
+              {this.state.isWhiteTurn ? (
+                <Icon2 name="pause-presentation" size={70} color="#000" on />
+              ) : (
+                <Icon2 name="pause-presentation" size={70} color="#fff" on />
+              )}
             </Pressable>
           ) : (
             <Pressable
               style={{
-                // backgroundColor: 'black',
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -318,25 +326,36 @@ this.setState({isConfigVisible:true})
                 easing="linear"
                 iterationCount="infinite"
                 direction="alternate"
-                // transition="backgroundColor"
-                duration={2000}
-              >
-                {this.state.isWhiteTurn ? <Icon2 name="pause-presentation" size={80} color="#000" on /> : <Icon2 name="pause-presentation" size={80} color="#fff" on />}
+                duration={2000}>
+                {this.state.isWhiteTurn ? (
+                  <Icon2 name="pause-presentation" size={80} color="#000" on />
+                ) : (
+                  <Icon2 name="pause-presentation" size={80} color="#fff" on />
+                )}
               </Animatable.Text>
             </Pressable>
           )}
           <Pressable
             style={{
-              // backgroundColor: 'black',
               flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
             }}>
-            {/* <Text style={{color: 'black', fontSize: 40}}>restart</Text> */}
-            <TouchableOpacity onPress={() => this.setState({fontSize: (this.state.fontSize || 10) + 5 })}>
-  <Animatable.Text transition="fontSize" style={{color:'white',fontSize: this.state.fontSize || 10}}>Size me up, Scotty</Animatable.Text>
-</TouchableOpacity>
-             <Icon name="refresh" size={50} color={this.state.isWhiteTurn ?"#000":"#fff"} />
+            <TouchableOpacity
+              onPress={() =>
+                this.setState({fontSize: (this.state.fontSize || 10) + 5})
+              }>
+              <Animatable.Text
+                transition="fontSize"
+                style={{color: 'white', fontSize: this.state.fontSize || 10}}>
+                Size me up, Scotty
+              </Animatable.Text>
+            </TouchableOpacity>
+            <Icon
+              name="refresh"
+              size={50}
+              color={this.state.isWhiteTurn ? '#000' : '#fff'}
+            />
           </Pressable>
         </View>
 
@@ -351,15 +370,10 @@ this.setState({isConfigVisible:true})
             },
           ]}
           onPress={this.handleTimer}>
-          <Text style={{ color: 'white', fontSize: 50 }}>
-            {/* {this.state.started ? 'ON' : 'OFF'} */}
-            {/* {this.state.isWhiteTurn ? 'white' : 'black'} */}
+          <Text style={{color: 'white', fontSize: 50}}>
             {this.state.timeBlack / 1000 < 3600
               ? new Date(this.state.timeBlack).toISOString().substr(14, 5)
               : "plus d'une heure!"}
-              
-              {/* {console.log(this.state.timeBlack)} */}
-            {/* {"\n"} {this.strings.how} */}
           </Text>
         </Pressable>
       </View>
@@ -369,16 +383,14 @@ this.setState({isConfigVisible:true})
 
 export default App;
 
-
-
 const styles = StyleSheet.create({
   whiteStyle: {
     color: 'black',
-    backgroundColor: "white"
+    backgroundColor: 'white',
   },
   blackStyle: {
     color: 'white',
-    backgroundColor: "black"
+    backgroundColor: 'black',
   },
   red: {
     color: 'red',
