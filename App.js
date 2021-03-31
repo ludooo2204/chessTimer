@@ -21,6 +21,9 @@ import {
   Button,
   Pressable,
   View,
+  UIManager,
+  LayoutAnimation,
+  Platform,
   TimePickerAndroid,
   ToolbarAndroid,
   StyleSheet,
@@ -33,6 +36,13 @@ import Icon2 from 'react-native-vector-icons/MaterialIcons';
 import * as Animatable from 'react-native-animatable';
 import LocalizedStrings from 'react-native-localization';
 import Sound from 'react-native-sound';
+
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 import {TOUCHABLE_STATE} from 'react-native-gesture-handler/lib/typescript/components/touchables/GenericTouchable';
 
@@ -49,7 +59,7 @@ class App extends React.Component {
       startBlack: 0,
       started: false,
       isConfigVisible: false,
-      fontSize: 10,
+ 
     };
     this.startWhiteTimer = this.startWhiteTimer.bind(this);
     this.startBlackTimer = this.startBlackTimer.bind(this);
@@ -61,9 +71,12 @@ class App extends React.Component {
     this.pauseTimer = this.pauseTimer.bind(this);
     this.resume = this.resume.bind(this);
     this.config = this.config.bind(this);
+    this.refresh = this.refresh.bind(this);
     this.setBlackTime = this.setBlackTime.bind(this);
     this.setWhiteTime = this.setWhiteTime.bind(this);
-  }
+    this.AnimationRefreshRef;
+    this.AnimationParamRef;
+    }
 
   componentDidUpdate() {
     //fin partie
@@ -90,9 +103,7 @@ class App extends React.Component {
       });
     }
   }
-  config() {
-    this.setState({isConfigVisible: true});
-  }
+ 
   strings = new LocalizedStrings({
     'en-US': {
       how: 'How do you want your egg today?',
@@ -195,6 +206,7 @@ class App extends React.Component {
     this.setState({timeWhite: value});
   }
   handleTimer() {
+    // LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
     let click = new Sound('click.mp3', Sound.MAIN_BUNDLE, error => {
       if (error) {
         console.log('failed to load the sound', error);
@@ -235,6 +247,29 @@ class App extends React.Component {
     this.setState({isConfigVisible:false})
   }
   }
+
+  refresh(){
+    console.log('Refresh')
+    this.AnimationRefreshRef.swing(400).then(endState => {if (endState.finished) 
+      {
+        if (this.state.isOn&&this.state.isWhiteTurn) this.stopWhiteTimer();
+        if (this.state.isOn&&!this.state.isWhiteTurn) this.stopBlackTimer();
+        this.setState({timeBlack: 15000,timeWhite:15000,started:false,isOn:false,isWhiteTurn:null});
+
+     }}
+    )
+  }
+
+
+  // 
+  config() {
+    console.log("config!!")
+    this.AnimationParamRef.swing(400).then(endState => endState.finished?this.setState({isConfigVisible: true}):null)
+    // this.setState({isConfigVisible: true});
+  }
+
+
+
   render() {
     return (
       <View
@@ -254,8 +289,8 @@ class App extends React.Component {
             },
             {transform: [{rotate: '180deg'}]},
           ]}
-          onPress={this.handleTimer}>
-          <Text style={{color: 'black', fontSize: 50}}>
+          onPress={this.state.isWhiteTurn&&this.state.isOn?this.handleTimer:null}>
+          <Text style={{color: 'black', fontSize: this.state.isWhiteTurn?120:50}}>
             {this.state.timeWhite / 1000 < 3600
               ? new Date(this.state.timeWhite).toISOString().substr(14, 5)
               : "plus d'une heure!"}
@@ -278,11 +313,16 @@ class App extends React.Component {
               justifyContent: 'center',
               alignItems: 'center',
             }}>
+              <Animatable.Text
+               ref={ref=>(this.AnimationParamRef =ref)}
+              //  iterationDelay={3000}
+               >
             {this.state.isWhiteTurn ? (
-              <Icon name="cog" size={50} color="#000" />
+              <Icon name="cog" size={70} color="#000" />
             ) : (
-              <Icon name="cog" size={50} color="#fff" />
+              <Icon name="cog" size={70} color="#fff" />
             )}
+            </Animatable.Text>
           </Pressable>
 
           {!this.state.started ? (
@@ -340,22 +380,19 @@ class App extends React.Component {
               flex: 1,
               justifyContent: 'center',
               alignItems: 'center',
-            }}>
-            <TouchableOpacity
-              onPress={() =>
-                this.setState({fontSize: (this.state.fontSize || 10) + 5})
-              }>
-              <Animatable.Text
-                transition="fontSize"
-                style={{color: 'white', fontSize: this.state.fontSize || 10}}>
-                Size me up, Scotty
-              </Animatable.Text>
-            </TouchableOpacity>
+            }}
+            onPress={this.refresh}
+            >
+            <Animatable.Text
+               ref={ref=>(this.AnimationRefreshRef =ref)}
+              //  iterationDelay={3000}
+               >
             <Icon
               name="refresh"
-              size={50}
+              size={70}
               color={this.state.isWhiteTurn ? '#000' : '#fff'}
             />
+            </Animatable.Text>
           </Pressable>
         </View>
 
@@ -369,8 +406,8 @@ class App extends React.Component {
               alignItems: 'center',
             },
           ]}
-          onPress={this.handleTimer}>
-          <Text style={{color: 'white', fontSize: 50}}>
+          onPress={!this.state.isWhiteTurn&&this.state.isOn?this.handleTimer:null}>
+         <Text style={{color: 'white', fontSize: !this.state.isWhiteTurn&&this.state.isOn?120:50}}>
             {this.state.timeBlack / 1000 < 3600
               ? new Date(this.state.timeBlack).toISOString().substr(14, 5)
               : "plus d'une heure!"}
