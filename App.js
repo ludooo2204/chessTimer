@@ -59,6 +59,7 @@ class App extends React.Component {
       startBlack: 0,
       started: false,
       isConfigVisible: false,
+      isWhiteConfigurationFocus:null
  
     };
     this.startWhiteTimer = this.startWhiteTimer.bind(this);
@@ -264,7 +265,7 @@ class App extends React.Component {
   // 
   config() {
     console.log("config!!")
-    this.AnimationParamRef.swing(400).then(endState => endState.finished?this.setState({isConfigVisible: true}):null)
+    this.AnimationParamRef.swing(400).then(endState => endState.finished?this.setState({isConfigVisible: true,isWhiteConfigurationFocus:true}):null)
     // this.setState({isConfigVisible: true});
   }
 
@@ -276,7 +277,7 @@ class App extends React.Component {
         style={{
           flex: 1,
         }}>
-          <Configuration visible={this.state.isConfigVisible} params={e=>this.handleParams(e)} ></Configuration>
+          <Configuration visible={this.state.isConfigVisible} whiteFocus={this.state.isWhiteConfigurationFocus} params={e=>this.handleParams(e)} ></Configuration>
 
         {/* white */}
         <Pressable
