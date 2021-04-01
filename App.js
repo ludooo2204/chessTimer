@@ -52,8 +52,10 @@ class App extends React.Component {
     super(props);
     this.state = {
       isWhiteTurn: null,
-      timeBlack: 30000,
-      timeWhite: 30000,
+      timeBlack: 60000,
+      timeBlackIncrement: 0,
+      timeWhite: 60000,
+      timeWhiteIncrement: 0,
       isOn: false,
       startWhite: 0,
       startBlack: 0,
@@ -136,7 +138,7 @@ class App extends React.Component {
     this.whiteTimer = setInterval(
       () =>
         this.setState({
-          timeWhite: this.state.startWhite - Date.now(),
+          timeWhite: this.state.startWhite + this.state.timeWhiteIncrement*1000 - Date.now(),
         }),
       50,
     );
@@ -151,7 +153,7 @@ class App extends React.Component {
     this.blackTimer = setInterval(
       () =>
         this.setState({
-          timeBlack: this.state.startBlack - Date.now(),
+          timeBlack: this.state.startBlack +this.state.timeBlackIncrement*1000 - Date.now(),
         }),
       50,
     );
@@ -206,6 +208,16 @@ class App extends React.Component {
     value = Number(value) * 60000;
     this.setState({timeWhite: value});
   }
+  setWhiteTimeIncrement(value) {
+    console.log(value)
+    value = Number(value) * 1;
+    console.log(value)
+    this.setState({timeWhiteIncrement: value},()=>console.log("timeWhiteIncremnet",this.state.timeWhiteIncrement));
+  }
+  setBlackTimeIncrement(value) {
+    value = Number(value) * 1;
+    this.setState({timeBlackIncrement: value});
+  }
   handleTimer() {
     // LayoutAnimation.configureNext(LayoutAnimation.Presets.spring)
     let click = new Sound('click.mp3', Sound.MAIN_BUNDLE, error => {
@@ -244,7 +256,9 @@ class App extends React.Component {
     else {
     console.log(`les params sont ${JSON.stringify(params)}`)
     this.setBlackTime(params.blackTime) 
+    this.setBlackTimeIncrement(params.blackTimeIncrement) 
     this.setWhiteTime(params.whiteTime) 
+    this.setWhiteTimeIncrement(params.whiteTimeIncrement) 
     this.setState({isConfigVisible:false})
   }
   }
@@ -277,7 +291,7 @@ class App extends React.Component {
         style={{
           flex: 1,
         }}>
-          <Configuration visible={this.state.isConfigVisible} whiteFocus={this.state.isWhiteConfigurationFocus} params={e=>this.handleParams(e)} ></Configuration>
+          <Configuration visible={this.state.isConfigVisible} whiteTimeDefault={this.state.timeWhite} blackTimeDefault={this.state.timeBlack} whiteFocus={this.state.isWhiteConfigurationFocus} params={e=>this.handleParams(e)} ></Configuration>
 
         {/* white */}
         <Pressable
