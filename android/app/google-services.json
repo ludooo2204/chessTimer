@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "149279449834",
+    "project_id": "pub-reactnative",
+    "storage_bucket": "pub-reactnative.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149279449834:android:c69a164f0971209ab82d93",
+        "android_client_info": {
+          "package_name": "com.chesstimer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "149279449834-s851a4egbqpis9juucutbbbka205cc3a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOn6iySed4SiqkTy-bg12cizChQaVegsg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "149279449834-s851a4egbqpis9juucutbbbka205cc3a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
