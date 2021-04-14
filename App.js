@@ -15,7 +15,7 @@ gestion des parametres de config
 
 import {transform} from '@babel/core';
 import React, {useState, useEffect} from 'react';
-
+import {AdMobBanner, AdMobRewarded, PublisherBanner} from 'react-native-admob'
 import {
   Text,
   Button,
@@ -264,6 +264,8 @@ class App extends React.Component {
   }
 
   refresh(){
+    AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/5224354917')
+    AdMobRewarded.requestAd().then(()=>AdMobRewarded.showAd())
     console.log('Refresh')
     this.AnimationRefreshRef.swing(400).then(endState => {if (endState.finished) 
       {
@@ -427,6 +429,16 @@ class App extends React.Component {
               ? new Date(this.state.timeBlack).toISOString().substr(14, 5)
               : "plus d'une heure!"}
           </Text>
+          <AdMobBanner
+          adSize="banner"
+          //id pour testAD
+          adUnitID="ca-app-pub-3940256099942544/6300978111"
+          // adUnitID="ca-app-pub-3566768979028421~7318514751"
+         testDevices={[PublisherBanner.simulatorId]}
+         onAdFailedToLoad={error=>console.log(error)}
+         onAppEvent={event=>console.log(event.name,event.info)     }
+         />
+     
         </Pressable>
       </View>
     );
